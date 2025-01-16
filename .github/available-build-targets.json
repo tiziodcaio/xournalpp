@@ -80,7 +80,9 @@
         "runner": "windows-latest",
         "type": "MSVC",
         "shell": "pwsh",
-        "build_portable": "true"
+        "build_portable": "true",
+      "build_portable": "true",
+      "run_ci": "true"
       },
     "windows-vcpkg": {
       "displayed_name": "Windows vcpkg",
