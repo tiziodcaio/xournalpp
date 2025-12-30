@@ -1,11 +1,13 @@
 #include "XmlTexNode.h"
 
+#include <string_view>
+
 #include <glib.h>  // for g_base64_encode, g_free, gchar, guchar
 
 #include "control/xml/XmlNode.h"  // for XmlNode
 #include "util/OutputStream.h"    // for OutputStream
 
-XmlTexNode::XmlTexNode(const char* tag, std::string&& binaryData): XmlNode(tag), binaryData(binaryData) {}
+XmlTexNode::XmlTexNode(const char* tag, std::string_view binaryData): XmlNode(tag), binaryData(binaryData) {}
 
 XmlTexNode::~XmlTexNode() = default;
 

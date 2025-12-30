@@ -400,7 +400,7 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
             if (play.playbackStatus) {
                 auto& status = *play.playbackStatus;
                 if (!status.success) {
-                    string message = FS(_F("Unable to play audio recording {1}") % status.filename.u8string());
+                    string message = FS(_F("Unable to play audio recording {1}") % status.filename.native());
                     XojMsgBox::showErrorToUser(this->xournal->getControl()->getGtkWindow(), message);
                 }
             }

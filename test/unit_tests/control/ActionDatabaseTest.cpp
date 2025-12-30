@@ -94,9 +94,9 @@ TEST(ActionDatabaseTest, testActionTargetMatch) {
     GError* error = nullptr;
     auto filepath = fs::path(GET_UI_FOLDER) / MENU_XML_FILE;
 
-    if (!gtk_builder_add_from_file(builder.get(), char_cast(filepath.u8string().c_str()), &error)) {
+    if (!gtk_builder_add_from_file(builder.get(), filepath.c_str(), &error)) {
         std::string msg = "Error loading menubar XML file ";
-        msg.append(char_cast(filepath.u8string()));
+        msg.append(filepath.native());
 
         if (error != nullptr) {
             msg += "\n";

@@ -118,7 +118,7 @@ auto LoadHandler::getMissingPdfFilename() const -> string { return this->pdfMiss
 auto LoadHandler::openFile(fs::path const& filepath) -> bool {
     this->filepath = filepath;
     int zipError = 0;
-    this->zipFp = zip_open(char_cast(filepath.u8string().c_str()), ZIP_RDONLY, &zipError);
+    this->zipFp = zip_open(filepath.c_str(), ZIP_RDONLY, &zipError);
 
     // Check if the file is actually an old XOPP-File and open it
     if (!this->zipFp && zipError == ZIP_ER_NOZIP) {
@@ -131,8 +131,7 @@ auto LoadHandler::openFile(fs::path const& filepath) -> bool {
         zip_file_t* mimetypeFp = zip_fopen(this->zipFp, "mimetype", 0);
         if (!mimetypeFp) {
             this->lastError = zip_error_strerror(zip_get_error(zipFp));
-            this->lastError =
-                    FS(_F("The file is no valid .xopp file (Mimetype missing): \"{1}\"") % filepath.u8string());
+            this->lastError = FS(_F("The file is no valid .xopp file (Mimetype missing): \"{1}\"") % filepath.native());
             return false;
         }
         char mimetype[MAX_MIMETYPE_LENGTH + 1] = {};
@@ -140,7 +139,7 @@ auto LoadHandler::openFile(fs::path const& filepath) -> bool {
         zip_fread(mimetypeFp, mimetype, MAX_MIMETYPE_LENGTH);
         if (!strcmp(mimetype, "application/xournal++")) {
             zip_fclose(mimetypeFp);
-            this->lastError = FS(_F("The file is no valid .xopp file (Mimetype wrong): \"{1}\"") % filepath.u8string());
+            this->lastError = FS(_F("The file is no valid .xopp file (Mimetype wrong): \"{1}\"") % filepath.native());
             return false;
         }
         zip_fclose(mimetypeFp);
@@ -148,8 +147,7 @@ auto LoadHandler::openFile(fs::path const& filepath) -> bool {
         // Get the file version
         zip_file_t* versionFp = zip_fopen(this->zipFp, "META-INF/version", 0);
         if (!versionFp) {
-            this->lastError =
-                    FS(_F("The file is no valid .xopp file (Version missing): \"{1}\"") % filepath.u8string());
+            this->lastError = FS(_F("The file is no valid .xopp file (Version missing): \"{1}\"") % filepath.native());
             return false;
         }
         char versionString[MAX_VERSION_LENGTH + 1] = {};
@@ -163,7 +161,7 @@ auto LoadHandler::openFile(fs::path const& filepath) -> bool {
         } else {
             zip_fclose(versionFp);
             this->lastError = FS(_F("The file is not a valid .xopp file (Version string corrupted): \"{1}\"") %
-                                 filepath.u8string());
+                                 filepath.native());
             return false;
         }
         zip_fclose(versionFp);
@@ -179,7 +177,7 @@ auto LoadHandler::openFile(fs::path const& filepath) -> bool {
 
     // Fail if neither utility could open the file
     if (!this->zipFp && !this->gzFp) {
-        this->lastError = FS(_F("Could not open file: \"{1}\"") % filepath.u8string());
+        this->lastError = FS(_F("Could not open file: \"{1}\"") % filepath.native());
         return false;
     }
     return true;
@@ -383,8 +381,7 @@ void LoadHandler::parseBgPixmap() {
         img.loadFile(fileToLoad, &error);
 
         if (error) {
-            error("%s",
-                  FC(_F("Could not read image: {1}. Error message: {2}") % fileToLoad.u8string() % error->message));
+            error("%s", FC(_F("Could not read image: {1}. Error message: {2}") % fileToLoad.native() % error->message));
             g_error_free(error);
         }
 
@@ -414,7 +411,7 @@ void LoadHandler::parseBgPixmap() {
         g_input_stream_close(inputStream.get(), nullptr, nullptr);
 
         if (error) {
-            error("%s", FC(_F("Could not read image: {1}. Error message: {2}") % filepath.u8string() % error->message));
+            error("%s", FC(_F("Could not read image: {1}. Error message: {2}") % filepath.native() % error->message));
             g_error_free(error);
         }
 
@@ -422,10 +419,10 @@ void LoadHandler::parseBgPixmap() {
         this->page->setBackgroundImage(img);
     } else if (!strcmp(domain, "clone")) {
         gchar* endptr = nullptr;
-        auto const& filename = filepath.u8string();
-        auto nr = static_cast<size_t>(g_ascii_strtoull(char_cast(filename.c_str()), &endptr, 10));
-        if (endptr == char_cast(filename.c_str())) {
-            error("%s", FC(_F("Could not read page number for cloned background image: {1}.") % filepath.u8string()));
+        auto const& filename = filepath.native();
+        auto nr = static_cast<size_t>(g_ascii_strtoull(filename.c_str(), &endptr, 10));
+        if (endptr == filename.c_str()) {
+            error("%s", FC(_F("Could not read page number for cloned background image: {1}.") % filepath.native()));
         }
         PageRef p = pages[nr];
 
@@ -503,7 +500,7 @@ void LoadHandler::parseBgPdf() {
             if (attachToDocument) {
                 this->attachedPdfMissing = true;
             } else {
-                this->pdfMissing = char_cast(pdfFilename.u8string());
+                this->pdfMissing = pdfFilename.native();
             }
         }
     }
@@ -1049,7 +1046,7 @@ void LoadHandler::parserText(GMarkupParseContext* context, const gchar* text, gs
                     handler->stroke->setPressure(handler->pressureBuffer);
                 }
             } else {
-                g_warning("%s", FC(_F("xoj-File: {1}") % handler->filepath.u8string()));
+                g_warning("%s", FC(_F("xoj-File: {1}") % handler->filepath.native()));
                 g_warning("%s", FC(_F("Wrong number of pressure values, got {1}, expected {2}") %
                                    handler->pressureBuffer.size() % (handler->stroke->getPointCount() - 1)));
             }
@@ -1136,23 +1133,23 @@ auto LoadHandler::loadDocument(fs::path const& filepath) -> std::unique_ptr<Docu
 
 auto LoadHandler::readZipAttachment(fs::path const& filename) -> std::unique_ptr<std::string> {
     zip_stat_t attachmentFileStat;
-    const int statStatus = zip_stat(this->zipFp, char_cast(filename.u8string().c_str()), 0, &attachmentFileStat);
+    const int statStatus = zip_stat(this->zipFp, filename.c_str(), 0, &attachmentFileStat);
     if (statStatus != 0) {
-        error("%s", FC(_F("Could not open attachment: {1}. Error message: {2}") % filename.u8string() %
+        error("%s", FC(_F("Could not open attachment: {1}. Error message: {2}") % filename.native() %
                        zip_error_strerror(zip_get_error(this->zipFp))));
         return {};
     }
 
     if (!(attachmentFileStat.valid & ZIP_STAT_SIZE)) {
-        error("%s", FC(_F("Could not open attachment: {1}. Error message: No valid file size provided") %
-                       filename.u8string()));
+        error("%s",
+              FC(_F("Could not open attachment: {1}. Error message: No valid file size provided") % filename.native()));
         return {};
     }
     const zip_uint64_t length = attachmentFileStat.size;
 
-    zip_file_t* attachmentFile = zip_fopen(this->zipFp, char_cast(filename.u8string().c_str()), 0);
+    zip_file_t* attachmentFile = zip_fopen(this->zipFp, filename.c_str(), 0);
     if (!attachmentFile) {
-        error("%s", FC(_F("Could not open attachment: {1}. Error message: {2}") % filename.u8string() %
+        error("%s", FC(_F("Could not open attachment: {1}. Error message: {2}") % filename.native() %
                        zip_error_strerror(zip_get_error(this->zipFp))));
         return {};
     }
@@ -1164,7 +1161,7 @@ auto LoadHandler::readZipAttachment(fs::path const& filename) -> std::unique_ptr
         if (read == -1) {
             zip_fclose(attachmentFile);
             error("%s", FC(_F("Could not open attachment: {1}. Error message: No valid file size provided") %
-                           filename.u8string()));
+                           filename.native()));
             return {};
         }
 
@@ -1177,12 +1174,12 @@ auto LoadHandler::readZipAttachment(fs::path const& filename) -> std::unique_ptr
 }
 
 auto LoadHandler::getTempFileForPath(fs::path const& filename) -> fs::path {
-    gpointer tmpFilename = g_hash_table_lookup(this->audioFiles, filename.u8string().c_str());
+    gpointer tmpFilename = g_hash_table_lookup(this->audioFiles, filename.c_str());
     if (tmpFilename) {
         return string(static_cast<char*>(tmpFilename));
     }
 
-    error("%s", FC(_F("Requested temporary file was not found for attachment {1}") % filename.u8string()));
+    error("%s", FC(_F("Requested temporary file was not found for attachment {1}") % filename.native()));
     return "";
 }
 

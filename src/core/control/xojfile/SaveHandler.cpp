@@ -1,8 +1,8 @@
 #include "SaveHandler.h"
 
-#include <cinttypes>   // for PRIx32
-#include <cstdint>     // for uint32_t
-#include <cstdio>      // for sprintf, size_t
+#include <cinttypes>  // for PRIx32
+#include <cstdint>    // for uint32_t
+#include <cstdio>     // for sprintf, size_t
 
 #include <cairo.h>                  // for cairo_surface_t
 #include <gdk-pixbuf/gdk-pixbuf.h>  // for gdk_pixbuf_save
@@ -92,8 +92,7 @@ void SaveHandler::writeTimestamp(XmlAudioNode* xmlAudioNode, const AudioElement*
     if (!audioElement->getAudioFilename().empty()) {
         /** set stroke timestamp value to the XmlPointNode */
         xmlAudioNode->setAttrib("ts", audioElement->getTimestamp());
-        auto audioFilename = audioElement->getAudioFilename().generic_u8string();
-        auto casted = char_cast(audioFilename);
+        auto casted = audioElement->getAudioFilename().native();
         xmlAudioNode->setAttrib("fn", std::string{casted.begin(), casted.end()});
     }
 }
@@ -164,50 +163,60 @@ void SaveHandler::visitLayer(XmlNode* page, const Layer* l) {
     auto* layer = new XmlNode("layer");
     page->addChild(layer);
     if (l->hasName()) {
-        layer->setAttrib("name", l->getName().c_str());
+        layer->setAttrib("name", l->getName());
     }
 
     for (const auto& e: l->getElementsView()) {
-        if (e->getType() == ELEMENT_STROKE) {
-            auto* s = dynamic_cast<const Stroke*>(e);
-            auto* stroke = new XmlPointNode("stroke");
-            layer->addChild(stroke);
-            visitStroke(stroke, s);
-        } else if (e->getType() == ELEMENT_TEXT) {
-            const Text* t = dynamic_cast<const Text*>(e);
-            auto* text = new XmlTextNode("text", t->getText());
-            layer->addChild(text);
+        switch (e->getType()) {
+            case ELEMENT_STROKE: {
+                auto* s = dynamic_cast<const Stroke*>(e);
+                auto* stroke = new XmlPointNode("stroke");
+                layer->addChild(stroke);
+                visitStroke(stroke, s);
+                break;
+            }
+            case ELEMENT_TEXT: {
+                const Text* t = dynamic_cast<const Text*>(e);
+                auto* text = new XmlTextNode("text", t->getText());
+                layer->addChild(text);
 
-            const XojFont& f = t->getFont();
+                const XojFont& f = t->getFont();
 
-            text->setAttrib("font", f.getName().c_str());
-            text->setAttrib("size", f.getSize());
-            text->setAttrib("x", t->getX());
-            text->setAttrib("y", t->getY());
-            text->setAttrib("color", getColorStr(t->getColor()).c_str());
+                text->setAttrib("font", f.getName().c_str());
+                text->setAttrib("size", f.getSize());
+                text->setAttrib("x", t->getX());
+                text->setAttrib("y", t->getY());
+                text->setAttrib("color", getColorStr(t->getColor()).c_str());
 
-            writeTimestamp(text, t);
-        } else if (e->getType() == ELEMENT_IMAGE) {
-            auto* i = dynamic_cast<const Image*>(e);
-            auto* image = new XmlImageNode("image");
-            layer->addChild(image);
+                writeTimestamp(text, t);
+                break;
+            }
+            case ELEMENT_IMAGE: {
+                auto* i = dynamic_cast<const Image*>(e);
+                auto* image = new XmlImageNode("image");
+                layer->addChild(image);
 
-            image->setImage(i->getImage());
+                image->setImage(i->getImage());
 
-            image->setAttrib("left", i->getX());
-            image->setAttrib("top", i->getY());
-            image->setAttrib("right", i->getX() + i->getElementWidth());
-            image->setAttrib("bottom", i->getY() + i->getElementHeight());
-        } else if (e->getType() == ELEMENT_TEXIMAGE) {
-            auto* i = dynamic_cast<const TexImage*>(e);
-            auto* image = new XmlTexNode("teximage", std::string(i->getBinaryData()));
-            layer->addChild(image);
+                image->setAttrib("left", i->getX());
+                image->setAttrib("top", i->getY());
+                image->setAttrib("right", i->getX() + i->getElementWidth());
+                image->setAttrib("bottom", i->getY() + i->getElementHeight());
+                break;
+            }
+            case ELEMENT_TEXIMAGE: {
+                auto* i = const_cast<TexImage*>(dynamic_cast<const TexImage*>(e));
+                auto* image = new XmlTexNode("teximage", i->getBinaryData());
+                layer->addChild(image);
 
-            image->setAttrib("text", i->getText().c_str());
-            image->setAttrib("left", i->getX());
-            image->setAttrib("top", i->getY());
-            image->setAttrib("right", i->getX() + i->getElementWidth());
-            image->setAttrib("bottom", i->getY() + i->getElementHeight());
+                image->setAttrib("text", i->getText());
+
+                image->setAttrib("left", i->getX());
+                image->setAttrib("top", i->getY());
+                image->setAttrib("right", i->getX() + i->getElementWidth());
+                image->setAttrib("bottom", i->getY() + i->getElementHeight());
+                break;
+            }
         }
     }
 }
@@ -250,7 +259,7 @@ void SaveHandler::visitPage(XmlNode* root, ConstPageRef p, const Document* doc, 
                         this->errorMessage += "\n";
                     }
                     this->errorMessage +=
-                            FS(_F("Could not write background \"{1}\", {2}") % filepath.u8string() % error->message);
+                            FS(_F("Could not write background \"{1}\", {2}") % filepath.native() % error->message);
 
                     g_error_free(error);
                 }
@@ -363,13 +372,12 @@ void SaveHandler::saveTo(OutputStream* out, const fs::path& filepath, ProgressLi
     for (const BackgroundImage& img: backgroundImages) {
         auto tmpfn = (fs::path(filepath) += ".") += img.getFilepath();
         // Are we certain that does not modify the GdkPixbuf?
-        if (!gdk_pixbuf_save(const_cast<GdkPixbuf*>(img.getPixbuf()), char_cast(tmpfn.u8string().c_str()), "png",
-                             nullptr, nullptr)) {
+        if (!gdk_pixbuf_save(const_cast<GdkPixbuf*>(img.getPixbuf()), tmpfn.c_str(), "png", nullptr, nullptr)) {
             if (!this->errorMessage.empty()) {
                 this->errorMessage += "\n";
             }
 
-            this->errorMessage += FS(_F("Could not write background \"{1}\". Continuing anyway.") % tmpfn.u8string());
+            this->errorMessage += FS(_F("Could not write background \"{1}\". Continuing anyway.") % tmpfn.native());
         }
     }
 }

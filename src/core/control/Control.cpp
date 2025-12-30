@@ -1,8 +1,8 @@
 #include "Control.h"
 
-#include <algorithm>  // for max
-#include <cstdlib>    // for size_t
-#include <exception>  // for exce...
+#include <algorithm>   // for max
+#include <cstdlib>     // for size_t
+#include <exception>   // for exce...
 #include <functional>  // for bind
 #include <iterator>    // for end
 #include <memory>      // for make...
@@ -243,7 +243,7 @@ void Control::deleteLastAutosaveFile() {
             fs::remove(this->lastAutosaveFilename);
         }
     } catch (const fs::filesystem_error& e) {
-        auto fmtstr = FS(_F("Could not remove old autosave file \"{1}\": {2}") % this->lastAutosaveFilename.u8string() %
+        auto fmtstr = FS(_F("Could not remove old autosave file \"{1}\": {2}") % this->lastAutosaveFilename.native() %
                          e.what());
         Util::execInUiThread([fmtstr, win = getGtkWindow()]() { XojMsgBox::showErrorToUser(win, fmtstr); });
     }
@@ -1496,7 +1496,7 @@ static auto shouldFileOpen(fs::path const& filepath, GtkWindow* win) -> bool {
         string msg = FS(_F("Do not open Autosave files. They may will be overwritten!\n"
                            "Copy the files to another folder.\n"
                            "Files from Folder {1} cannot be opened.") %
-                        basePath.u8string());
+                        basePath.native());
         XojMsgBox::showErrorToUser(win, msg);
     }
     return !isChild;
@@ -1546,7 +1546,7 @@ void Control::openXoppFile(fs::path filepath, int scrollToPage, std::function<vo
     std::unique_ptr<Document> doc(loadHandler.loadDocument(filepath));
 
     if (!doc) {
-        string msg = FS(_F("Error opening file \"{1}\"") % filepath.u8string()) + "\n" + loadHandler.getLastError();
+        string msg = FS(_F("Error opening file \"{1}\"") % filepath.native()) + "\n" + loadHandler.getLastError();
         XojMsgBox::showErrorToUser(this->getGtkWindow(), msg);
         callback(false);
         return;
@@ -1595,7 +1595,7 @@ bool Control::openPdfFile(fs::path filepath, bool attachToDocument, int scrollTo
     if (success) {
         this->replaceDocument(std::move(doc), scrollToPage);
     } else {
-        std::string msg = FS(_F("Error reading PDF file \"{1}\"\n{2}") % filepath.u8string() % doc->getLastErrorMsg());
+        std::string msg = FS(_F("Error reading PDF file \"{1}\"\n{2}") % filepath.native() % doc->getLastErrorMsg());
         XojMsgBox::showErrorToUser(this->getGtkWindow(), msg);
     }
     this->getCursor()->setCursorBusy(false);
@@ -1617,7 +1617,7 @@ bool Control::openPngFile(fs::path filepath, bool attachToDocument, int scrollTo
     img.loadFile(imagePath, &error);
 
     if (error) {
-        std::string msg = FS(_F("Error reading PNG file \"{1}\"") % imagePath.u8string());
+        std::string msg = FS(_F("Error reading PNG file \"{1}\"") % imagePath.native());
         XojMsgBox::showErrorToUser(this->getGtkWindow(), msg);
         g_error_free(error);
         this->doc->unlock();
@@ -1774,7 +1774,7 @@ void Control::promptMissingPdf(Control::MissingPdfData& missingPdf, const fs::pa
     bool proposePdfFile = !missingPdf.wasPdfAttached && !filename.empty() && fs::exists(proposedPdfFilepath) &&
                           !fs::is_directory(proposedPdfFilepath);
     if (proposePdfFile) {
-        msg += FS(_F("\nProposed replacement file: \"{1}\"") % proposedPdfFilepath.u8string());
+        msg += FS(_F("\nProposed replacement file: \"{1}\"") % proposedPdfFilepath.native());
     }
 
     // show the dialog
@@ -1973,9 +1973,9 @@ void Control::updateWindowTitle() {
         }
 
         if (settings->isFilepathInTitlebarShown()) {
-            title += std::string("[") + char_cast(refPath.parent_path().u8string().c_str()) + "] - ";
+            title += "[" + refPath.parent_path().native() + "] - ";
         }
-        title += char_cast(refPath.filename().u8string());
+        title += refPath.filename().native();
     }
     this->doc->unlock();
 

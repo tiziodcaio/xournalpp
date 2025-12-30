@@ -156,7 +156,7 @@ void LatexSettingsPanel::checkDeps() {
         std::ifstream is(settings.globalTemplatePath, std::ios_base::binary);
         if (!is.is_open()) {
             msg = FS(_F("Unable to open global template file at {1}. Does it exist?") %
-                     settings.globalTemplatePath.u8string());
+                     settings.globalTemplatePath.native());
             fail = true;
         } else {
             std::string templ(std::istreambuf_iterator<char>(is), {});
@@ -168,7 +168,7 @@ void LatexSettingsPanel::checkDeps() {
                 if (g_subprocess_wait_check(*proc, nullptr, &err)) {
                     msg = _("Sample LaTeX file generated successfully.");
                 } else {
-                    msg = FS(_F("Error: {1}. Please check the contents of {2}") % err->message % tmpDir.u8string());
+                    msg = FS(_F("Error: {1}. Please check the contents of {2}") % err->message % tmpDir.native());
                     g_error_free(err);
                     fail = true;
                 }
@@ -180,7 +180,7 @@ void LatexSettingsPanel::checkDeps() {
         }
     } else {
         msg = FS(_F("Error: {1} is not a regular file. Please check your LaTeX template file settings. ") %
-                 settings.globalTemplatePath.u8string());
+                 settings.globalTemplatePath.native());
         fail = true;
     }
 

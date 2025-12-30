@@ -101,8 +101,7 @@ auto ImageExport::createSurface(double width, double height, size_t id, double z
             cairo_scale(this->cr, zoomRatio, zoomRatio);
             return zoomRatio;
         case EXPORT_GRAPHICS_SVG:
-            this->surface =
-                    cairo_svg_surface_create(char_cast(getFilenameWithNumber(id).u8string().c_str()), width, height);
+            this->surface = cairo_svg_surface_create(getFilenameWithNumber(id).c_str(), width, height);
             cairo_svg_surface_restrict_to_version(this->surface, CAIRO_SVG_VERSION_1_2);
             this->cr = cairo_create(this->surface);
             break;
@@ -121,7 +120,7 @@ auto ImageExport::freeSurface(size_t id) -> bool {
     cairo_status_t status = CAIRO_STATUS_SUCCESS;
     if (format == EXPORT_GRAPHICS_PNG) {
         auto filepath = getFilenameWithNumber(id);
-        status = cairo_surface_write_to_png(surface, char_cast(filepath.u8string().c_str()));
+        status = cairo_surface_write_to_png(surface, filepath.c_str());
     }
     cairo_surface_destroy(surface);
 

@@ -1,6 +1,6 @@
 #include "ColorPalette.h"
 
-#include <fstream>    // for basic_ifstream, basic_ofstream
+#include <fstream>  // for basic_ifstream, basic_ofstream
 #include <ostream>
 #include <sstream>    // for operator<<, basic_ostream::operator<<
 #include <stdexcept>  // for invalid_argument
@@ -20,7 +20,7 @@ Palette::Palette(fs::path path): filepath{std::move(path)}, namedColors{}, heade
 void Palette::load() {
     if (!fs::exists(this->filepath))
         throw std::invalid_argument(
-                FS(FORMAT_STR("The palette file {1} does not exist.") % this->filepath.filename().u8string()));
+                FS(FORMAT_STR("The palette file {1} does not exist.") % this->filepath.filename().native()));
     header.clear();
     namedColors.clear();
 
@@ -169,8 +169,7 @@ auto operator>>(std::istream& str, Header& header) -> std::istream& {
 
 auto Palette::parseErrorDialog(const std::exception& e) const -> void {
     std::stringstream msg_stream{};
-    msg_stream << "There has been a problem parsing the color palette file at " << char_cast(filepath.u8string())
-               << "\n\n";
+    msg_stream << "There has been a problem parsing the color palette file at " << filepath.native() << "\n\n";
     msg_stream << "What happened:\n" << e.what() << "\n";
     msg_stream << "What to do:\n";
     msg_stream << "Please fix your palette file, or rename it so xournalpp creates a new default palette file "

@@ -50,7 +50,7 @@ void Menubar::populate(const GladeSearchpath* gladeSearchPath, MainWindow* win) 
     auto filepath = gladeSearchPath->findFile("", MENU_XML_FILE);
     GError* error = nullptr;
 
-    if (auto u8fp = filepath.u8string(); !gtk_builder_add_from_file(builder.get(), char_cast(u8fp.c_str()), &error)) {
+    if (auto u8fp = filepath.native(); !gtk_builder_add_from_file(builder.get(), u8fp.c_str(), &error)) {
         std::string msg = FS(_F("Error loading menubar XML file (try to load \"{1}\")") % u8fp);
 
         if (error != nullptr) {

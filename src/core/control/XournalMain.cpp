@@ -100,13 +100,13 @@ auto migrateSettings() -> MigrateResult {
                 fs::copy(oldPath, newConfigPath, fs::copy_options::recursive);
                 constexpr auto msg = "Due to a recent update, Xournal++ has changed where its configuration files are "
                                      "stored.\nThey have been automatically copied from\n\t{1}\nto\n\t{2}";
-                return {MigrateStatus::Success, FS(_F(msg) % oldPath.u8string() % newConfigPath.u8string())};
+                return {MigrateStatus::Success, FS(_F(msg) % oldPath.native() % newConfigPath.native())};
             } catch (const fs::filesystem_error& e) {
                 constexpr auto msg =
                         "Due to a recent update, Xournal++ has changed where its configuration files are "
                         "stored.\nHowever, when attempting to copy\n\t{1}\nto\n\t{2}\nmigration failed:\n{3}";
                 g_message("Migration failed: %s", e.what());
-                return {MigrateStatus::Failure, FS(_F(msg) % oldPath.u8string() % newConfigPath.u8string() % e.what())};
+                return {MigrateStatus::Failure, FS(_F(msg) % oldPath.native() % newConfigPath.native() % e.what())};
             }
         }
     }
@@ -117,7 +117,7 @@ static void deleteFile(const fs::path& file, GtkWindow* win) {
     std::error_code error;
     if (!fs::remove(file, error)) {
         std::stringstream msg;
-        msg << FS(_F("Failed to delete file: {1}") % file.u8string()) << std::endl;
+        msg << FS(_F("Failed to delete file: {1}") % file.native()) << std::endl;
         msg << error << std::endl << error.message() << std::endl;
         msg << FS(_F("Please delete the file manually"));
         XojMsgBox::showErrorToUser(win, msg.str());
@@ -350,7 +350,7 @@ void initResourcePath(GladeSearchpath* gladePath, const gchar* relativePathAndFi
     std::string msg =
             FS(_F("<span foreground='red' size='x-large'>Missing the needed UI file:\n<b>{1}</b></span>\nCould "
                   "not find them at any location.\n  Not relative\n  Not in the Working Path\n  Not in {2}") %
-               relativePathAndFile % Util::getDataPath().u8string());
+               relativePathAndFile % Util::getDataPath().native());
 
     if (!failIfNotFound) {
         msg += _("\n\nWill now attempt to run without this file.");
@@ -386,14 +386,14 @@ void on_open_files(GApplication* application, gpointer f, gint numFiles, gchar* 
         if (fs::exists(p)) {
             app_data->control->openFile(fs::absolute(p));
         } else {
-            const std::string msg = FS(_F("File {1} does not exist.") % p.u8string());
+            const std::string msg = FS(_F("File {1} does not exist.") % p.native());
             XojMsgBox::showErrorToUser(GTK_WINDOW(app_data->win->getWindow()), msg);
         }
     } catch (const fs::filesystem_error& e) {
         const std::string msg = FS(_F("Filesystem error: {1}\n"
                                       "Sorry, Xournal++ cannot open the file: {2}\n"
                                       "Consider copying the file to a local directory.") %
-                                   e.what() % p.u8string());
+                                   e.what() % p.native());
         XojMsgBox::showErrorToUser(GTK_WINDOW(app_data->win->getWindow()), msg);
     }
     gtk_window_present(GTK_WINDOW(app_data->win->getWindow()));
@@ -538,9 +538,9 @@ void XournalMain::initLocalisation() {
     fs::path localeDir = Util::getGettextFilepath(Util::getLocalePath());
 
 #ifdef _WIN32
-    wbindtextdomain(GETTEXT_PACKAGE, localeDir.wstring().c_str());
+    wbindtextdomain(GETTEXT_PACKAGE, localeDir.c_str());
 #else
-    bindtextdomain(GETTEXT_PACKAGE, char_cast(localeDir.u8string().c_str()));
+    bindtextdomain(GETTEXT_PACKAGE, localeDir.c_str());
 #endif
 
     textdomain(GETTEXT_PACKAGE);

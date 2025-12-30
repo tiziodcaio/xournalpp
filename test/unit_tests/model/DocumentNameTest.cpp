@@ -26,8 +26,8 @@ TEST(DocumentName, testUTF8) {
     auto trything = [&](Document::DocumentType t) {
         try {
             p = doc.createSaveFilename(t, u8"%% %Y %EY %B %A", u8"%{name} %Y %EY %B %A");
-            std::cout << "Resulting path: " << char_cast(p.u8string()) << std::endl;
-            if (!g_utf8_validate(char_cast(p.u8string().c_str()), -1, nullptr)) {
+            std::cout << "Resulting path: " << p.native() << std::endl;
+            if (!g_utf8_validate(p.c_str(), -1, nullptr)) {
                 failed = true;
                 std::cout << "This path yields an invalid UTF8 string" << std::endl;
             }

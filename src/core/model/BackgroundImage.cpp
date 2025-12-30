@@ -19,7 +19,7 @@
 
 struct BackgroundImage::Content {
     Content(fs::path path, GError** error):
-            path(std::move(path)), pixbuf(gdk_pixbuf_new_from_file(char_cast(this->path.u8string().c_str()), error)) {}
+            path(std::move(path)), pixbuf(gdk_pixbuf_new_from_file(this->path.c_str(), error)) {}
 
     Content(GInputStream* stream, fs::path path, GError** error):
             path(std::move(path)), pixbuf(gdk_pixbuf_new_from_stream(stream, nullptr, error)) {}

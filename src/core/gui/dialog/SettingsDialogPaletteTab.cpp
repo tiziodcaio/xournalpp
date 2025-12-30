@@ -26,15 +26,14 @@ auto getGObjectPalettePath(GObject* gObject) -> fs::path {
 }
 
 auto getDisplayPalettePath(const fs::path& path) -> std::string {
+    const auto filename = path.filename().c_str();
     if (path.parent_path() == Util::getBuiltInPaletteDirectoryPath()) {
-        return std::string{"└─ "} + "<i>" + FS(_F("Built-in palettes")) + "/</i> " +
-               char_cast(path.filename().u8string().c_str());
+        return std::string{"└─ "} + "<i>" + FS(_F("Built-in palettes")) + "/</i> " + filename;
     } else if (path.parent_path() == Util::getCustomPaletteDirectoryPath()) {
-        return std::string{"└─ "} + "<i>" + FS(_F("User palettes")) + "/</i> " +
-               char_cast(path.filename().u8string().c_str());
+        return std::string{"└─ "} + "<i>" + FS(_F("User palettes")) + "/</i> " + filename;
     } else {
-        g_warning("Unexpected type of palette path encountered %s", char_cast(path.parent_path().u8string().c_str()));
-        return std::string{"└─ "} + char_cast(path.u8string().c_str());
+        g_warning("Unexpected type of palette path encountered %s", path.parent_path().c_str());
+        return std::string{"└─ "} + path.c_str();
     }
 }
 
@@ -98,8 +97,8 @@ void SettingsDialogPaletteTab::renderColorPaletteExplainLabel() const {
     gtk_label_set_label(colorPaletteExplainLabel, FS(_F("<i>The palettes shown below are obtained from the "
                                                         "<a href=\"file://{1}\">Built-in palettes</a> and "
                                                         "<a href=\"file://{2}\">User palettes</a> directories:</i>\n") %
-                                                     Util::getBuiltInPaletteDirectoryPath().u8string() %
-                                                     Util::getCustomPaletteDirectoryPath().u8string())
+                                                     Util::getBuiltInPaletteDirectoryPath().native() %
+                                                     Util::getCustomPaletteDirectoryPath().native())
                                                           .c_str());
     gtk_label_set_wrap(colorPaletteExplainLabel, true);
     gtk_label_set_use_markup(colorPaletteExplainLabel, true);
@@ -167,7 +166,7 @@ auto SettingsDialogPaletteTab::newPaletteListBoxRow(Palette& palette) -> GtkWidg
     if (paletteName.empty()) {
         text = newPaletteTextBox(std::string{"<i>" + FS(_F("Palette has no Name")) + "</i>"}, palette.getFilePath());
     } else {
-        text = newPaletteTextBox(paletteName, palette.getFilePath().u8string());
+        text = newPaletteTextBox(paletteName, palette.getFilePath().native());
     }
     gtk_box_append(GTK_BOX(rowContent), text);
 

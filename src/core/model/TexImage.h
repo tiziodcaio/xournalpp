@@ -14,7 +14,8 @@
 #include <memory>
 #include <string>  // for string
 
-#include <cairo.h>    // for cairo_surface_t, cairo_status_t
+#include <cairo.h>  // for cairo_surface_t, cairo_status_t
+#include <control/settings/LatexSettings.h>
 #include <glib.h>     // for GError
 #include <poppler.h>  // for PopplerDocument
 
@@ -42,7 +43,7 @@ public:
     /**
      * Returns the binary data (PDF or PNG (deprecated)).
      */
-    const std::string& getBinaryData() const;
+    std::string_view getBinaryData();
 
     /**
      * @return The image, if render source is PNG. Note: this is deprecated.
@@ -111,4 +112,9 @@ private:
      * Tex String
      */
     std::string text;
+
+    /**
+     * Formula generation settings
+     */
+    LatexSettings settings;
 };

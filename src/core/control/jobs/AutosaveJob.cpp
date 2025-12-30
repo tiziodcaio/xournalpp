@@ -67,7 +67,7 @@ void AutosaveJob::run() {
             control->setLastAutosaveFile(filepath);
         } catch (const fs::filesystem_error& e) {
             auto fmtstr = _F("Could not rename autosave file from \"{1}\" to \"{2}\": {3}");
-            this->error = FS(fmtstr % tempfile.u8string() % filepath.u8string() % e.what());
+            this->error = FS(fmtstr % tempfile.native() % filepath.native() % e.what());
         }
     }
 }

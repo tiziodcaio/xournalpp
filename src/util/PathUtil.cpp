@@ -187,8 +187,7 @@ Util::GFilename::GFilename(const fs::path& p) {
     if (!g_get_filename_charsets(nullptr)) {
         // g_filename are NOT utf-8 encoded
         GError* err = nullptr;
-        value = xoj::util::OwnedCString::assumeOwnership(
-                g_filename_from_utf8(char_cast(p.u8string().c_str()), -1, nullptr, nullptr, &err));
+        value = xoj::util::OwnedCString::assumeOwnership(g_filename_from_utf8(p.c_str(), -1, nullptr, nullptr, &err));
         if (err) {
             g_warning("Failed to convert g_filename from utf8 with error code: %d\n%s", err->code, err->message);
             g_error_free(err);
@@ -309,7 +308,7 @@ void Util::openFileWithDefaultApplication(const fs::path& filename) {
     if (system(command.c_str()) != 0) {
         std::string msg = FS(_F("File couldn't be opened. You have to do it manually:\n"
                                 "URL: {1}") %
-                             filename.u8string());
+                             filename.native());
         XojMsgBox::showErrorToUser(nullptr, msg);
     }
 }
@@ -431,7 +430,7 @@ auto Util::ensureFolderExists(const fs::path& p) -> fs::path {
     try {
         fs::create_directories(p);
     } catch (const fs::filesystem_error& fe) {
-        std::string msg = FS(_F("Could not create folder: {1}\nFailed with error: {2}") % p.u8string() % fe.what());
+        std::string msg = FS(_F("Could not create folder: {1}\nFailed with error: {2}") % p.native() % fe.what());
         Util::execInUiThread([msg = std::move(msg)]() { XojMsgBox::showErrorToUser(nullptr, msg); });
     }
     return p;
@@ -447,8 +446,7 @@ auto Util::normalizeAssetPath(const fs::path& asset, const fs::path& base, PathS
             return fs::absolute(asset).lexically_normal().generic_u8string();
         }
     } catch (const fs::filesystem_error& fe) {
-        g_warning("Could not normalize path: %s\nFailed with error: %s", char_cast(asset.u8string().c_str()),
-                  fe.what());
+        g_warning("Could not normalize path: %s\nFailed with error: %s", asset.c_str(), fe.what());
         return asset.generic_u8string();
     }
 }
@@ -489,7 +487,7 @@ bool Util::safeRenameFile(fs::path const& from, fs::path const& to) {
         // Attempt copy and delete
         g_warning("Renaming file %s to %s failed with %s. This may happen when source and target are on different "
                   "filesystems. Attempt to copy the file.",
-                  char_cast(fe.path1().u8string().c_str()), char_cast(fe.path2().u8string().c_str()), fe.what());
+                  fe.path1().c_str(), fe.path2().c_str(), fe.what());
         fs::copy_file(from, to, fs::copy_options::overwrite_existing);
         fs::remove(from);
     }
@@ -500,8 +498,7 @@ void Util::safeReplaceExtension(fs::path& p, const char* newExtension) {
     try {
         p.replace_extension(newExtension);
     } catch (const fs::filesystem_error& fe) {
-        g_warning("Could not replace extension of file \"%s\"! Failed with %s", char_cast(p.u8string().c_str()),
-                  fe.what());
+        g_warning("Could not replace extension of file \"%s\"! Failed with %s", p.c_str(), fe.what());
     }
 }
 
@@ -548,7 +545,7 @@ auto Util::getCustomPaletteDirectoryPath() -> fs::path { return getConfigSubfold
 auto Util::listFilesSorted(fs::path directory) -> std::vector<fs::path> {
     std::vector<fs::path> filePaths{};
     if (!exists(directory)) {
-        g_warning("Directory %s does not exist.", char_cast(directory.u8string().c_str()));
+        g_warning("Directory %s does not exist.", directory.c_str());
         return filePaths;
     }
 

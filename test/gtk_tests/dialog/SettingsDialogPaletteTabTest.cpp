@@ -61,7 +61,7 @@ class RenderedPaletteTabTest: public GtkTest {
         const std::vector<fs::path> paletteDirectories{palettePath.parent_path()};
         SettingsDialogPaletteTab paletteTab{&gladeSearchPath, paletteDirectories};
         paletteTab.renderPaletteTab(palettePath);
-        EXPECT_EQ(palettePath.u8string(), paletteTab.getSelectedPalette().value().u8string());
+        EXPECT_EQ(palettePath.native(), paletteTab.getSelectedPalette().value().native());
     }
 };
 TEST_F(RenderedPaletteTabTest, renderedPaletteTabShouldNotChangeSelectedColorPalette) {}

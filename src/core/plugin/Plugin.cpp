@@ -251,7 +251,8 @@ void Plugin::loadScript() {
         XojMsgBox::showPluginMessage(name, errMsg, true);
 
         // Error out if file can't be read
-        g_warning("Could not load plugin Lua file. Error: \"%s\", error code: %d (syntax error: %s)", errMsg, status, status == LUA_ERRSYNTAX ? "true" : "false");
+        g_warning("Could not load plugin Lua file. Error: \"%s\", error code: %d (syntax error: %s)", errMsg, status,
+                  status == LUA_ERRSYNTAX ? "true" : "false");
         this->valid = false;
         return;
     }
@@ -269,8 +270,7 @@ void Plugin::loadScript() {
         const char* errMsg = lua_tostring(lua.get(), -1);
         XojMsgBox::showPluginMessage(name, errMsg, true);
 
-        g_warning("Could not run plugin Lua file: \"%s\", error: \"%s\"", char_cast(luafile.u8string().c_str()),
-                  errMsg);
+        g_warning("Could not run plugin Lua file: \"%s\", error: \"%s\"", luafile.c_str(), errMsg);
         this->valid = false;
         return;
     }

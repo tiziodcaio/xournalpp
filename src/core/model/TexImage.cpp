@@ -1,6 +1,7 @@
 #include "TexImage.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>  // for move
 
 #include <poppler-document.h>  // for poppler_document_ge...
@@ -76,7 +77,7 @@ auto TexImage::cairoReadFunction(TexImage* image, unsigned char* data, unsigned 
 /**
  * Gets the binary data, a .PNG image or a .PDF
  */
-auto TexImage::getBinaryData() const -> std::string const& { return this->binaryData; }
+auto TexImage::getBinaryData() -> std::string_view { return this->binaryData; }
 
 void TexImage::setText(std::string text) { this->text = std::move(text); }
 

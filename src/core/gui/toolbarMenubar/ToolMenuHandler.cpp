@@ -68,7 +68,7 @@ void ToolMenuHandler::populate(const GladeSearchpath* gladeSearchPath) {
     if (!tbModel->parse(file, true, this->control->getPalette())) {
         std::string msg = FS(_F("Could not parse general toolbar.ini file: {1}\n"
                                 "No Toolbars will be available") %
-                             file.u8string());
+                             file.native());
         XojMsgBox::showErrorToUser(control->getGtkWindow(), msg);
     }
 
@@ -77,7 +77,7 @@ void ToolMenuHandler::populate(const GladeSearchpath* gladeSearchPath) {
         if (!tbModel->parse(file, false, this->control->getPalette())) {
             string msg = FS(_F("Could not parse custom toolbar.ini file: {1}\n"
                                "Toolbars will not be available") %
-                            file.u8string());
+                            file.native());
             XojMsgBox::showErrorToUser(control->getGtkWindow(), msg);
         }
     }

@@ -24,7 +24,7 @@ void OutputStream::write(const char* str) { write(str, std::strlen(str)); }
 GzOutputStream::GzOutputStream(fs::path file): file(std::move(file)) {
     this->fp = GzUtil::openPath(this->file, "w");
     if (this->fp == nullptr) {
-        this->error = FS(_F("Error opening file: \"{1}\"") % this->file.u8string());
+        this->error = FS(_F("Error opening file: \"{1}\"") % this->file.native());
         this->error = this->error + "\n" + std::strerror(errno);
     }
 }
@@ -45,7 +45,7 @@ void GzOutputStream::write(const char* data, size_t len) {
         int errnum = 0;
         const char* error = gzerror(this->fp, &errnum);
         if (errnum != Z_OK) {
-            this->error = FS(_F("Error writing data to file: \"{1}\"") % this->file.u8string());
+            this->error = FS(_F("Error writing data to file: \"{1}\"") % this->file.native());
             this->error += "\n" + FS(_F("Error code {1}. Message:") % errnum) + "\n";
             if (errnum == Z_ERRNO) {
                 // fs error. Fetch the precise message
@@ -66,7 +66,7 @@ void GzOutputStream::close() {
     this->fp = nullptr;
 
     if (errnum != Z_OK) {
-        this->error = FS(_F("Error occurred while closing file: \"{1}\"") % this->file.u8string());
+        this->error = FS(_F("Error occurred while closing file: \"{1}\"") % this->file.native());
         this->error += "\n" + FS(_F("Error code {1}") % errnum);
         if (errnum == Z_ERRNO) {
             // fs error. Fetch the precise message

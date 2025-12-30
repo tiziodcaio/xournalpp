@@ -743,11 +743,11 @@ auto Settings::load() -> bool {
     xmlKeepBlanksDefault(0);
 
     if (!fs::exists(filepath)) {
-        g_warning("Settings file %s does not exist. Regenerating. ", filepath.string().c_str());
+        g_warning("Settings file %s does not exist. Regenerating. ", filepath.c_str());
         save();
     }
 
-    xmlDocPtr doc = xmlParseFile(char_cast(filepath.u8string().c_str()));
+    xmlDocPtr doc = xmlParseFile(filepath.c_str());
 
     if (doc == nullptr) {
         g_warning("Settings::load:: doc == null, could not load Settings!\n");
@@ -756,7 +756,7 @@ auto Settings::load() -> bool {
 
     xmlNodePtr cur = xmlDocGetRootElement(doc);
     if (cur == nullptr) {
-        g_message("The settings file \"%s\" is empty", filepath.string().c_str());
+        g_message("The settings file \"%s\" is empty", filepath.c_str());
         xmlFreeDoc(doc);
 
         return false;
@@ -923,9 +923,9 @@ void Settings::save() {
 
     SAVE_STRING_PROP(selectedToolbar);
 
-    saveProperty("lastSavePath", char_cast(this->lastSavePath.u8string().c_str()), root);
-    saveProperty("lastOpenPath", char_cast(this->lastOpenPath.u8string().c_str()), root);
-    saveProperty("lastImagePath", char_cast(this->lastImagePath.u8string().c_str()), root);
+    saveProperty("lastSavePath", this->lastSavePath.c_str(), root);
+    saveProperty("lastOpenPath", this->lastOpenPath.c_str(), root);
+    saveProperty("lastImagePath", this->lastImagePath.c_str(), root);
 
     SAVE_DOUBLE_PROP(edgePanSpeed);
     SAVE_DOUBLE_PROP(edgePanMaxMult);
@@ -1064,7 +1064,7 @@ void Settings::save() {
     SAVE_STRING_PROP(sizeUnit);
 
 #ifdef ENABLE_AUDIO
-    saveProperty("audioFolder", char_cast(this->audioFolder.u8string().c_str()), root);
+    saveProperty("audioFolder", this->audioFolder.c_str(), root);
     SAVE_INT_PROP(audioInputDevice);
     SAVE_INT_PROP(audioOutputDevice);
     SAVE_DOUBLE_PROP(audioSampleRate);
@@ -1111,7 +1111,7 @@ void Settings::save() {
     SAVE_BOOL_PROP(stabilizerFinalizeStroke);
 
     if (!this->colorPaletteSetting.empty()) {
-        saveProperty("colorPalette", char_cast(this->colorPaletteSetting.u8string().c_str()), root);
+        saveProperty("colorPalette", this->colorPaletteSetting.c_str(), root);
     }
 
     /**/
@@ -1122,7 +1122,7 @@ void Settings::save() {
     // breaks on Windows due to the native character representation being
     // wchar_t instead of char
     fs::path& p = latexSettings.globalTemplatePath;
-    xmlNode = saveProperty("latexSettings.globalTemplatePath", p.empty() ? "" : char_cast(p.u8string().c_str()), root);
+    xmlNode = saveProperty("latexSettings.globalTemplatePath", p.empty() ? "" : p.c_str(), root);
     SAVE_STRING_PROP(latexSettings.genCmd);
     SAVE_STRING_PROP(latexSettings.sourceViewThemeId);
     SAVE_FONT_PROP(latexSettings.editorFont);
@@ -1152,7 +1152,7 @@ void Settings::save() {
         saveData(root, p.first, p.second);
     }
 
-    xmlSaveFormatFileEnc(char_cast(filepath.u8string().c_str()), doc, "UTF-8", 1);
+    xmlSaveFormatFileEnc(filepath.c_str(), doc, "UTF-8", 1);
     xmlFreeDoc(doc);
 }
 

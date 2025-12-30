@@ -47,7 +47,7 @@ PageTypeHandler::~PageTypeHandler() = default;
 auto PageTypeHandler::parseIni(fs::path const& filepath) -> bool {
     GKeyFile* config = g_key_file_new();
     g_key_file_set_list_separator(config, ',');
-    if (!g_key_file_load_from_file(config, char_cast(filepath.u8string().c_str()), G_KEY_FILE_NONE, nullptr)) {
+    if (!g_key_file_load_from_file(config, filepath.c_str(), G_KEY_FILE_NONE, nullptr)) {
         g_key_file_free(config);
         return false;
     }
@@ -55,7 +55,9 @@ auto PageTypeHandler::parseIni(fs::path const& filepath) -> bool {
     gsize length = 0;
     gchar** groups = g_key_file_get_groups(config, &length);
 
-    for (gsize i = 0; i < length; i++) { loadFormat(config, groups[i]); }
+    for (gsize i = 0; i < length; i++) {
+        loadFormat(config, groups[i]);
+    }
 
     g_strfreev(groups);
     g_key_file_free(config);
