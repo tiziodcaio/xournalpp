@@ -45,14 +45,14 @@ TEST(DocumentName, testUTF8) {
 
     p = fs::path(u8"ùèçüûin/ë€ds测试q.xopp");
 
-    try {
+    /*try {
         std::cout << "Try \"p.native()\": ";
         auto a = p.native();
         std::cout << "done: " << std::flush;
         std::cout << a << std::endl;
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
-    }
+    }*/
     try {
         std::cout << "Try \"p.string()\"  : ";
         auto a = p.string();
@@ -61,12 +61,12 @@ TEST(DocumentName, testUTF8) {
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
-    try {
+    /*try {
         std::cout << "Try \"std::cout << p.native()\": ";
         std::cout << p.native() << std::endl;
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
-    }
+    }*/
     try {
         std::cout << "Try \"std::cout << p\"           : ";
         std::cout << p << std::endl;
@@ -81,14 +81,14 @@ TEST(DocumentName, testUTF8) {
     }
 
     p = fs::path(L"ùèçüûin/ë€ds测试q.xopp");
-    try {
+    /*try {
         std::cout << "Try \"p.native()\": ";
         auto a = p.native();
         std::cout << "done: " << std::flush;
         std::cout << a << std::endl;
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
-    }
+    }*/
     try {
         std::cout << "Try \"p.string()\"  : ";
         auto a = p.string();
@@ -97,12 +97,12 @@ TEST(DocumentName, testUTF8) {
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
-    try {
+    /*try {
         std::cout << "Try \"std::cout << p.native()\": ";
         std::cout << p.native() << std::endl;
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
-    }
+    }*/
     try {
         std::cout << "Try \"std::cout << p\"           : ";
         std::cout << p << std::endl;

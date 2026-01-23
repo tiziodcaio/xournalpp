@@ -139,18 +139,17 @@ jobs:
     name: 'Test Xournal++ on ${{ matrix.run.displayed_name }}'
     steps:
       - uses: actions/checkout@v4
+      - name: "Bootstrap vcpkg"
+        run: git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; .\bootstrap-vcpkg.bat
       - name: 'Install dependencies'
         uses: ./.github/actions/install_deps_windows
         with:
           msystem: ${{ matrix.run.msystem }}
           msys_package_env: ${{ matrix.run.msys_package_env }}
-      - name: "Bootstrap vcpkg"
-        shell: msys2 {0}
-        run: |
-          git clone http://github.com/Microsoft/vcpkg
-          ./vcpkg/vcpkg-bootstrap.sh
       - name: 'Build Xournal++'
         uses: ./.github/actions/build
+        env:
+          VCPKG_ROOT: "C:\vcpkg"
         with:
           build_type: ${{env.BUILD_TYPE}}
           extra_cmake_flags: ${{ matrix.run.extra_cmake_flags }}
