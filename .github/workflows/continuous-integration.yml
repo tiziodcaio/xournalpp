@@ -22,7 +22,7 @@ jobs:
       windows_builds: ${{ steps.parse.outputs.windows_builds }}
     steps:
       - uses: actions/checkout@v4
-        with:  # Get the build targets
+        with: # Get the build targets
           sparse-checkout: '${{ env.build-targets-json }}'
           sparse-checkout-cone-mode: false
       - name: 'Parse list of targets'
@@ -56,7 +56,7 @@ jobs:
             }
             core.setOutput('windows_builds', windows_builds)
   ubuntu:
-    needs: ['prepare']
+    needs: [ 'prepare' ]
     strategy:
       matrix:
         run: ${{fromJSON(needs.prepare.outputs.linux_builds)}}
@@ -130,8 +130,9 @@ jobs:
           CI=true xvfb-run -a ./test/test-gtk-integration
         working-directory: ${{github.workspace}}/build
   Windows:
-    needs: ['prepare']
+    needs: [ 'prepare' ]
     strategy:
+      fail-fast: false
       matrix:
         run: ${{fromJSON(needs.prepare.outputs.windows_builds)}}
     runs-on: ${{ matrix.run.runner }}
@@ -143,6 +144,11 @@ jobs:
         with:
           msystem: ${{ matrix.run.msystem }}
           msys_package_env: ${{ matrix.run.msys_package_env }}
+      - name: "Bootstrap vcpkg"
+        shell: msys2 {0}
+        run: |
+          git clone http://github.com/Microsoft/vcpkg
+          ./vcpkg/vcpkg-bootstrap.sh
       - name: 'Build Xournal++'
         uses: ./.github/actions/build
         with:
@@ -160,7 +166,7 @@ jobs:
           CI=true ./test/test-units
         working-directory: ${{github.workspace}}/build
   MacOS:
-    needs: ['prepare']
+    needs: [ 'prepare' ]
     strategy:
       matrix:
         run: ${{fromJSON(needs.prepare.outputs.macos_builds)}}

@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    "gtk3",
+    "poppler",
+    "libsndfile",
+    "lua",
+    "portaudio",
+    "qpdf"
+  ]
+}
