@@ -90,10 +90,8 @@
     "windows-vcpkg": {
       "displayed_name": "Windows vcpkg",
       "runner": "windows-latest",
-      "msystem": "mingw64",
-      "msys_package_env": "x86_64",
+      "type": "MSVC",
       "build_portable": "true",
-      "shell": "msys2 {0}",
       "run_ci": "true",
       "extra_cmake_flags": "--preset=vcpkg"
     }
