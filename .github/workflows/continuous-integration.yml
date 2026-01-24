@@ -12,7 +12,6 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Debug
   VCPKG_ROOT: 'C:\vcpkg'
-
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -151,7 +150,9 @@ jobs:
         uses: ./.github/actions/install_deps_windows_MSVC
       - name: "Bootstrap vcpkg"
         if: matrix.run.type == 'VCPKG'
-        run: git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; .\bootstrap-vcpkg.bat
+        uses: lukka/run-vcpkg@v11
+        with:
+          doNotCache: false
       - name: 'Build Xournal++'
         uses: ./.github/actions/build
         with:
