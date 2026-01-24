@@ -96,6 +96,7 @@
       "runner": "windows-latest",
       "type": "vcpkg",
       "build_portable": "true",
+      "shell": "bash",
       "run_ci": "true",
       "extra_cmake_flags": "--preset=vcpkg"
     }
