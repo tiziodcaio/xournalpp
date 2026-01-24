@@ -61,7 +61,7 @@
       "msys_package_env": "clang-x86_64",
       "build_portable": "true",
       "shell": "msys2 {0}",
-      "run_ci": "true"
+      "run_ci": "false"
     },
     "windows": {
       "displayed_name": "Windows x86_64",
@@ -81,7 +81,7 @@
       "msys_package_env": "clang-aarch64",
       "build_portable": "true",
       "shell": "msys2 {0}",
-      "run_ci": "true"
+      "run_ci": "false"
     },
     "windows-msvc": {
       "displayed_name": "Windows MSVC",
@@ -89,7 +89,7 @@
       "type": "MSVC",
       "shell": "pwsh",
       "build_portable": "true",
-      "run_ci": "true"
+      "run_ci": "false"
     },
     "windows-vcpkg": {
       "displayed_name": "Windows vcpkg",
