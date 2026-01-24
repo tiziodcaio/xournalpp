@@ -49,6 +49,7 @@
       "msystem": "ucrt64",
       "msys_package_env": "ucrt-x86_64",
       "build_portable": "true",
+      "shell": "msys2 {0}",
       "run_ci": "true"
     },
     "windows-clang": {
@@ -57,6 +58,7 @@
       "msystem": "clang64",
       "msys_package_env": "clang-x86_64",
       "build_portable": "true",
+      "shell": "msys2 {0}",
       "run_ci": "true"
     },
     "windows": {
@@ -65,6 +67,7 @@
       "msystem": "mingw64",
       "msys_package_env": "x86_64",
       "build_portable": "true",
+      "shell": "msys2 {0}",
       "run_ci": "true"
     },
     "windows-arm": {
@@ -73,23 +76,24 @@
       "msystem": "clangarm64",
       "msys_package_env": "clang-aarch64",
       "build_portable": "true",
+      "shell": "msys2 {0}",
       "run_ci": "true"
     },
     "windows-msvc": {
-        "displayed_name": "Windows MSVC",
-        "runner": "windows-latest",
-        "type": "MSVC",
-        "shell": "pwsh",
-        "build_portable": "true",
+      "displayed_name": "Windows MSVC",
+      "runner": "windows-latest",
+      "type": "MSVC",
+      "shell": "pwsh",
       "build_portable": "true",
       "run_ci": "true"
-      },
+    },
     "windows-vcpkg": {
       "displayed_name": "Windows vcpkg",
       "runner": "windows-latest",
       "msystem": "mingw64",
       "msys_package_env": "x86_64",
       "build_portable": "true",
+      "shell": "msys2 {0}",
       "run_ci": "true",
       "extra_cmake_flags": "--preset=vcpkg"
     }
