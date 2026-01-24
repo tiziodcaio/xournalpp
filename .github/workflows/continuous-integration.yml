@@ -140,8 +140,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: 'Install dependencies (MINGW64)'
-        if: matrix.run.type == 'MINGW64'
+        if: matrix.run.type != 'MSVC'
         uses: ./.github/actions/install_deps_windows_MINGW64
+        with:
+          msystem: ${{ matrix.run.msystem }}
+          msys_package_env: ${{ matrix.run.msys_package_env }}
       - name: 'Install dependencies (MSVC)'
         if: matrix.run.type == 'MSVC'
         uses: ./.github/actions/install_deps_windows_MSVC
@@ -159,13 +162,13 @@ jobs:
           shell: ${{ matrix.run.shell }}
           extra_cmake_flags: ${{ matrix.run.extra_cmake_flags }}
       - name: 'Build tests (MINGW64)'
-        if: matrix.run.type == 'MINGW64'
+        if: matrix.run.type != 'MSVC'
         shell: msys2 {0}
         run: |
           cmake --build . --target test-units
         working-directory: ${{github.workspace}}/build
       - name: 'Run tests (MINGW64)'
-        if: matrix.run.type == 'MINGW64'
+        if: matrix.run.type != 'MSVC'
         shell: msys2 {0}
         run: |
           CI=true ./test/test-units
