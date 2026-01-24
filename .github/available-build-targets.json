@@ -46,6 +46,7 @@
     "windows-ucrt": {
       "displayed_name": "Windows x86_64 ucrt",
       "runner": "windows-latest",
+      "type": "MINGW64",
       "msystem": "ucrt64",
       "msys_package_env": "ucrt-x86_64",
       "build_portable": "true",
@@ -55,6 +56,7 @@
     "windows-clang": {
       "displayed_name": "Windows x86_64 llvm",
       "runner": "windows-latest",
+      "type": "MINGW64",
       "msystem": "clang64",
       "msys_package_env": "clang-x86_64",
       "build_portable": "true",
@@ -64,6 +66,7 @@
     "windows": {
       "displayed_name": "Windows x86_64",
       "runner": "windows-latest",
+      "type": "MINGW64",
       "msystem": "mingw64",
       "msys_package_env": "x86_64",
       "build_portable": "true",
@@ -73,6 +76,7 @@
     "windows-arm": {
       "displayed_name": "Windows ARM",
       "runner": "windows-11-arm",
+      "type": "MINGW64",
       "msystem": "clangarm64",
       "msys_package_env": "clang-aarch64",
       "build_portable": "true",
@@ -90,7 +94,7 @@
     "windows-vcpkg": {
       "displayed_name": "Windows vcpkg",
       "runner": "windows-latest",
-      "type": "MSVC",
+      "type": "vcpkg",
       "build_portable": "true",
       "run_ci": "true",
       "extra_cmake_flags": "--preset=vcpkg"

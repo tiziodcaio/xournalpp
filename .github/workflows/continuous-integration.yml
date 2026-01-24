@@ -140,7 +140,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: 'Install dependencies (MINGW64)'
-        if: matrix.run.type != 'MSVC'
+        if: matrix.run.type == 'MINGW64'
         uses: ./.github/actions/install_deps_windows_MINGW64
         with:
           msystem: ${{ matrix.run.msystem }}
@@ -149,7 +149,7 @@ jobs:
         if: matrix.run.type == 'MSVC'
         uses: ./.github/actions/install_deps_windows_MSVC
       - name: "Bootstrap vcpkg"
-        if: matrix.run.type == 'MSVC'
+        if: matrix.run.type == 'VCPKG'
         run: git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; .\bootstrap-vcpkg.bat  
       - name: 'Build Xournal++'
         uses: ./.github/actions/build
@@ -162,13 +162,13 @@ jobs:
           shell: ${{ matrix.run.shell }}
           extra_cmake_flags: ${{ matrix.run.extra_cmake_flags }}
       - name: 'Build tests (MINGW64)'
-        if: matrix.run.type != 'MSVC'
+        if: matrix.run.type == 'MINGW64'
         shell: msys2 {0}
         run: |
           cmake --build . --target test-units
         working-directory: ${{github.workspace}}/build
       - name: 'Run tests (MINGW64)'
-        if: matrix.run.type != 'MSVC'
+        if: matrix.run.type == 'MINGW64'
         shell: msys2 {0}
         run: |
           CI=true ./test/test-units
