@@ -150,7 +150,7 @@ jobs:
         uses: ./.github/actions/install_deps_windows_MSVC
       - name: "Bootstrap vcpkg"
         if: matrix.run.type == 'VCPKG'
-        run: git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; .\bootstrap-vcpkg.bat  
+        run: git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; .\bootstrap-vcpkg.bat
       - name: 'Build Xournal++'
         uses: ./.github/actions/build
         with:
@@ -159,8 +159,8 @@ jobs:
             -DENABLE_GTEST=on
             -DDOWNLOAD_GTEST=on
             ${{ env.XOPP_EXTRA_CMAKE_PARAMS }}
+            ${{ matrix.run.extra_cmake_flags }}
           shell: ${{ matrix.run.shell }}
-          extra_cmake_flags: ${{ matrix.run.extra_cmake_flags }}
       - name: 'Build tests (MINGW64)'
         if: matrix.run.type == 'MINGW64'
         shell: msys2 {0}
