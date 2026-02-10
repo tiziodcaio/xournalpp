@@ -17,6 +17,7 @@
 #include "model/Document.h"
 #include "model/DocumentHandler.h"
 #include "util/StringUtils.h"
+#include "util/utf8_view.h"
 
 TEST(DocumentName, testUTF8) {
     DocumentHandler dh;
@@ -92,6 +93,30 @@ TEST(DocumentName, testUTF8) {
     try {
         std::cout << "Try \"p.string()\"  : ";
         auto a = p.string();
+        std::cout << "done: " << std::flush;
+        std::cout << a << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+    try {
+        std::cout << "Try \"char_cast(xoj::util::utf8(p.string()))\"  : ";
+        auto a = char_cast(xoj::util::utf8(p.string()).str());
+        std::cout << "done: " << std::flush;
+        std::cout << a << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+    try {
+        std::cout << "Try \"char_cast(xoj::util::utf8(p.u8string()))\"  : ";
+        auto a = char_cast(xoj::util::utf8(p.u8string()).str());
+        std::cout << "done: " << std::flush;
+        std::cout << a << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+    try {
+        std::cout << "Try \"char_cast(xoj::util::utf8(p.native()))\"  : ";
+        auto a = char_cast(xoj::util::utf8(p.native()).str());
         std::cout << "done: " << std::flush;
         std::cout << a << std::endl;
     } catch (const std::exception& e) {
