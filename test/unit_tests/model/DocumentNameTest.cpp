@@ -22,7 +22,7 @@
 TEST(DocumentName, testUTF8) {
     DocumentHandler dh;
     Document doc(&dh);
-    fs::path p;
+    const fs::path p = u8"ùèçüûin/ë€ds测试q.xopp";
     bool failed = false;
     auto trything = [&](Document::DocumentType t) {
         try {
@@ -39,12 +39,9 @@ TEST(DocumentName, testUTF8) {
     };
     trything(Document::PDF);
     trything(Document::XOPP);
-    doc.setFilepath(fs::path(u8"ùèçüûin/ë€ds测试q.xopp"));
+    doc.setFilepath(p);
     trything(Document::PDF);
     trything(Document::XOPP);
-
-
-    p = fs::path(u8"ùèçüûin/ë€ds测试q.xopp");
 
     /*try {
         std::cout << "Try \"p.native()\": ";
@@ -117,6 +114,14 @@ TEST(DocumentName, testUTF8) {
     try {
         std::cout << "Try \"char_cast(xoj::util::utf8(p.native()))\"  : ";
         auto a = char_cast(xoj::util::utf8(p.native()).str());
+        std::cout << "done: " << std::flush;
+        std::cout << a << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+    try {
+        std::cout << "Try \"char_cast(p.u8string())\"  : ";
+        auto a = char_cast(p.u8string());
         std::cout << "done: " << std::flush;
         std::cout << a << std::endl;
     } catch (const std::exception& e) {
