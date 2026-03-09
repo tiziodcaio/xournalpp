@@ -63,3 +63,8 @@ Debug
 # Miscellaneous
 .DS_STORE
 *~
+
+# vcpkg
+CMakeUserPresets.json
+vcpkg
+vcpkg_installed
